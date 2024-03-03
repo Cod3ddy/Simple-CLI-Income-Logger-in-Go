@@ -8,10 +8,44 @@ import (
 	"strconv"
 	"math"
 	"log"
+	"flag"
 )
 
+// COLOR
+
+type Color string
+
+const (
+	ColorRed = "\u001b[31m"
+	ColorReset = "\u001b[0m"
+)
+
+func alert(color Color, message string){
+	fmt.Println(string(color), message, string(ColorReset))
+}
+
+
 func main() {
-	filePtr, err := os.Open("./income.txt")
+
+	var sourceFile string
+	var resultFile string
+
+
+	flag.StringVar(&sourceFile, "input", "",  "Input file")
+	flag.StringVar(&resultFile, "results", "",  "results file")
+
+	flag.Parse()
+
+
+	// IF SRC AND RESULTFILE ARE EMPTY
+	if sourceFile == "" || resultFile == ""{
+		alert(ColorRed, "Input file or Result file is missing!");
+		return
+	}
+
+	// ELSE
+
+	filePtr, err := os.Open(sourceFile)
 	if err != nil {
 		fmt.Println("Error opening the file:", err)
 		return
@@ -49,16 +83,16 @@ func main() {
 	balance := totalCredit - totalDebit
 
 	//STORE RESULTS IN RESULTS.TXT FILE
-	storeResults(totalCredit, totalDebit, balance)
+	storeResults(totalCredit, totalDebit, balance, resultFile)
 
 	// GET RESULTS FROM FILE
-	readResults("./results.txt")
+	readResults(resultFile)
 }
 
 
-func storeResults(totalCredit float64, totalDebit float64, balance float64) {
+func storeResults(totalCredit float64, totalDebit float64, balance float64, outputFile string) {
 	// WRITE TO results.txt FILE
-	resPtr, err := os.Create("./results.txt")
+	resPtr, err := os.Create(outputFile)
 	if err != nil{
 		fmt.Println("Error creating the file:", err)
 		return
