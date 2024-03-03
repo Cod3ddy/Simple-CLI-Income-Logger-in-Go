@@ -44,7 +44,6 @@ func main() {
 	}
 
 	// ELSE
-
 	filePtr, err := os.Open(sourceFile)
 	if err != nil {
 		fmt.Println("Error opening the file:", err)
@@ -59,9 +58,8 @@ func main() {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		//get the num
-		splittedString := strings.Split(line, "k")
-		numberString := splittedString[0];
+		// GET AMOUNT
+		numberString := splitString(line);
 
 		// Parse the line
 		amount, err := strconv.Atoi(numberString)
@@ -76,6 +74,10 @@ func main() {
 		}else if strings.HasPrefix(line, "+") {
 			totalDebit += math.Abs(float64(amount))
 		}
+
+		// check amount 
+
+		fmt.Println("Amount: ", amount)
 		
 	}
 
@@ -123,4 +125,25 @@ func readResults(file string){
 			log.Fatalf("failed to scan file: %s", err)
 		}
 	}
+}
+
+// SPLIT THE STRING FROM THE FILE
+func splitString(target string) string{
+	parts := strings.Split(target, " ")
+	numStr := parts[0];
+
+	if strings.HasSuffix(numStr, "k"){
+		parts = strings.Split(numStr, "k");
+		numStr = parts[0];
+		
+		amount, err := strconv.Atoi(numStr)
+
+		if err != nil{
+			return "Error parsing line"
+		}
+
+		totalAmount := amount * 1000
+		return strconv.Itoa(totalAmount);
+	}
+	return numStr;
 }
